@@ -89,3 +89,20 @@ project "HelloWindow"
 
     filter "system:windows"
         defines { "_WINDOWS" }
+
+project "HelloTriangle"
+    kind "WindowedApp"
+    language "C++"
+
+    includedirs { "deps/glad/include/", "deps/glfw/include/" }
+
+    files "projects/01-HelloTriangle/**"
+    links{ "GLAD", "GLFW" }
+
+    filter "system:linux"
+        links{ "dl", "pthread"}
+
+        defines{ "_X11" }
+
+    filter "system:windows"
+        defines { "_WINDOWS" }
