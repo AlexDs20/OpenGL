@@ -2,6 +2,23 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
+// vertex shader -> convert to normalized device coordinate is the main goal
+const char* vertexShaderSource = \
+"#version 330 core\n"
+"layout (location = 0) in vec3 aPos;\n"
+"void main()\n"
+"{\n"
+"    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+"}\0";
+
+// fragment shader -> computing color of pixels is main goal
+const char* vertexFragmentSource = \
+"#version 330 core\n"
+"out vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+"    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+"}\n";
 
 // Callback to resize Viewport
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -9,12 +26,13 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 // Process Input and how to handle it
 void processInput(GLFWwindow* window);
 
+int logShaderCompile(const unsigned int shaderId, const char* shaderType);
+
+int logProgramLink(const unsigned int shaderProgram);
 
 int main(int argc, char** argv)
 {
     // glfw: initialize and configure
-    //      Use glfw3.3
-    //      Use only core functionalities
     // ----------------------------------
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -32,6 +50,8 @@ int main(int argc, char** argv)
         return -1;
     }
     glfwMakeContextCurrent( window );
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -41,8 +61,63 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    // Register callback after window is created and before render loop
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    // shader stuff
+    // ------------
+    //  Triangle vertices in Normalized Device Coordinates /output of vertex shader has to be in it
+    float vertices[] {
+        -0.5f, -0.5f, 0.0f,
+         0.5f, -0.5f, 0.0f,
+         0.0f,  0.5f, 0.0f,
+    };
+
+    // generate vertex buffer object
+    unsigned int VBO;
+    glGenBuffers(1, &VBO);
+
+    // and then bind it. Only can bind one type at a time.
+    // All operations on a GL_ARRAY_BUFFER will be done on VBO as it is currently bound.
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+    // copy vertex data into buffer's memory
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    // compile vertex shader
+    unsigned int vertexShader;
+    vertexShader = glCreateShader(GL_VERTEX_SHADER);
+
+    // attach shader src code to shader object and compile
+    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+    glCompileShader(vertexShader);
+
+    // Check if compiled properly and log
+    logShaderCompile(vertexShader, "VERTEX");
+
+    // compile fragment shader
+    unsigned int fragmentShader;
+    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, &vertexFragmentSource, NULL);
+    glCompileShader(fragmentShader);
+
+    // Log error fragment shader compiler
+    logShaderCompile(fragmentShader, "FRAGMENT");
+
+    // We now need a shader program to link the vertex and fragment shaders
+    unsigned int shaderProgram;
+    shaderProgram = glCreateProgram();
+
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+
+    // Log linking errors
+    logProgramLink(shaderProgram);
+
+    // Now that it the shaders are linked into the program -> delete
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+    // Use the program that was just created
+    glUseProgram(shaderProgram);        // Every shader and redering call after will now use this program
 
     // render loop
     // -----------
@@ -52,9 +127,7 @@ int main(int argc, char** argv)
         processInput(window);
 
         // rendering commands
-        // state setting color
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        // state using color
         glClear(GL_COLOR_BUFFER_BIT);
 
         // swap buffers and poll IO events (key pressed/released, ...)
@@ -80,3 +153,31 @@ void processInput(GLFWwindow* window)
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 }
+
+int logShaderCompile(const unsigned int shaderId, const char* shaderType)
+{
+    int success;
+    char infoLog[512];
+    glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
+
+    if (!success)
+    {
+        glGetShaderInfoLog(shaderId, 512, NULL, infoLog);
+        std::cout << "ERROR::SHADER::" << shaderType << "::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
+    return success;
+};
+
+int logProgramLink(const unsigned int shaderProgram)
+{
+    int success;
+    char infoLog[512];
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+
+    if (!success)
+    {
+        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+        std::cout << "ERROR::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+    }
+    return success;
+};
