@@ -73,13 +73,13 @@ project "TestOpenGL"
         links { "GL" }
 
 
-project "OpenGL"
+project "HelloWindow"
     kind "WindowedApp"
     language "C++"
 
     includedirs { "deps/glad/include/", "deps/glfw/include/" }
 
-    files "projects/00-opengl/**"
+    files "projects/00-HelloWindow/**"
     links{ "GLAD", "GLFW" }
 
     filter "system:linux"
