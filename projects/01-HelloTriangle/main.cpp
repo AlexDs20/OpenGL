@@ -131,6 +131,26 @@ int main(int argc, char** argv)
     // Enable vertex attribute
     glEnableVertexAttribArray(0);
 
+    // Now we should use some function for drawing, but if we have lots of objects -> cumbersome
+    // -> use Vertex Array Object (core opengl requires VAO)
+
+    // ..:: Initialization code
+    // 0. create Vertex Attribute Object
+    unsigned int VAO;
+    glGenVertexArrays(1, &VAO);
+    // 1. bind VAO
+    glBindVertexArray(VAO);
+    // 2. copy our vertices in a buffer for opengl to use
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    // 3. set vertex attributes pointers
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // Draw
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+
+
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -141,6 +161,11 @@ int main(int argc, char** argv)
         // rendering commands
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+
+        // Select shader program, bind VAO and draw!
+        glUseProgram(shaderProgram);
+        glBindVertexArray(VAO);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
 
         // swap buffers and poll IO events (key pressed/released, ...)
         // -----------------------------------------------------------
