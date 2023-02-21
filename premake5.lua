@@ -73,7 +73,7 @@ project "TestOpenGL"
         links { "GL" }
 
 
-project "HelloWindow"
+project "00-HelloWindow"
     kind "WindowedApp"
     language "C++"
 
@@ -90,7 +90,7 @@ project "HelloWindow"
     filter "system:windows"
         defines { "_WINDOWS" }
 
-project "HelloTriangle"
+project "01-HelloTriangle"
     kind "WindowedApp"
     language "C++"
 

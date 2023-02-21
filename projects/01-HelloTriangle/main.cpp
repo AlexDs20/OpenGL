@@ -119,6 +119,18 @@ int main(int argc, char** argv)
     // Use the program that was just created
     glUseProgram(shaderProgram);        // Every shader and redering call after will now use this program
 
+    // We can give as many attributes to each vertex, we need to specify clearly what lies where
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    // 0: we set location=0 for the position in vertex shader
+    // 3: size of vertex attribute, we have a vec3 -> 3 values
+    // GL_FLOAT: dtype
+    // GL_FALSE: do not normalize
+    // 3*sizeof(float): stride = space between consecutive vertex attribute
+    // (void*)0: offset of where the position data begins in the buffer
+
+    // Enable vertex attribute
+    glEnableVertexAttribArray(0);
+
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
