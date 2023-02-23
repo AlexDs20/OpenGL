@@ -11,24 +11,23 @@ const unsigned int SCR_HEIGHT = 600;
 const char* vertexShaderSource = \
 "#version 330 core\n"
 "layout (location = 0) in vec3 aPos;\n"
-"out vec4 vertexColor;\n"
+"layout (location = 1) in vec3 aColor;\n"
+"out vec3 vertexColor;\n"
 "void main()\n"
 "{\n"
-"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-"   vertexColor = vec4(aPos.xyz, 1.0);\n"
-//"   vertexColor = vec4(0.5, 0.0, 0.0, 1.0);\n"
+"   gl_Position = vec4(aPos, 1.0);\n"
+"   vertexColor = aColor;\n"
 "}\0";
 
 // fragment shader -> computing color of pixels is main goal
 const char* vertexFragmentSource = \
 "#version 330 core\n"
-"in vec4 vertexColor;\n"
+"in vec3 vertexColor;\n"
+"uniform float ourColor;\n"
 "out vec4 FragColor;\n"
-"uniform vec4 ourColor;\n"
 "void main()\n"
 "{\n"
-"   FragColor = vertexColor;\n"
-"   FragColor = vec4(ourColor.rg, vertexColor.y, 1.0);\n"
+"   FragColor = ourColor * vec4(vertexColor, 1.0);\n"
 "}\0";
 
 // Callback to resize Viewport
@@ -126,14 +125,14 @@ int main(int argc, char** argv)
     // If we want to draw a rectnagle which is 2 triangle, we have many duplicate vertices
     // Instead do this:
     float verticesRectangle[] = {
-         0.5f,  0.5f, 0.0f,  // top right
-         0.5f, -0.5f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f,  // bottom left
-        //-0.5f,  0.5f, 0.0f   // top left
+         0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,      // top right
+         0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,      // bottom right
+        -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,      // bottom left
+        -0.5f,  0.5f, 0.0f,  0.5f, 0.5f, 0.5f,      // top left
     };
     unsigned int indices[] = {
         0, 1, 2,    // first triangle
-        // 1, 2, 3
+        0, 3, 2
     };
 
     unsigned int VBO, EBO, VAO;
@@ -150,8 +149,10 @@ int main(int argc, char** argv)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -175,12 +176,11 @@ int main(int argc, char** argv)
         glUseProgram(shaderProgram);
 
         float timeValue = glfwGetTime();
-        float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-        float redValue = (cos(timeValue) / 2.0f) + 0.5f;
-        glUniform4f(vertexColorLocation, redValue, greenValue, 0.0f, 1.0f);
+        float scaleValue = (sin(timeValue) / 2.0f);
+        glUniform1f(vertexColorLocation, scaleValue);
 
         glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         // glDrawArrays(GL_TRIANGLES, 0, 3);
 
         // swap buffers and poll IO events (key pressed/released, ...)
