@@ -79,7 +79,7 @@ project "00-HelloWindow"
 
     includedirs { "deps/glad/include/", "deps/glfw/include/" }
 
-    files "projects/00-HelloWindow/**"
+    files "projects/%{prj.name}/**"
     links{ "GLAD", "GLFW" }
 
     filter "system:linux"
@@ -96,7 +96,24 @@ project "01-HelloTriangle"
 
     includedirs { "deps/glad/include/", "deps/glfw/include/" }
 
-    files "projects/01-HelloTriangle/**"
+    files "projects/%{prj.name}/**"
+    links{ "GLAD", "GLFW" }
+
+    filter "system:linux"
+        links{ "dl", "pthread"}
+
+        defines{ "_X11" }
+
+    filter "system:windows"
+        defines { "_WINDOWS" }
+
+project "02-Shaders"
+    kind "WindowedApp"
+    language "C++"
+
+    includedirs { "deps/glad/include/", "deps/glfw/include/" }
+
+    files "projects/%{prj.name}/**"
     links{ "GLAD", "GLFW" }
 
     filter "system:linux"
