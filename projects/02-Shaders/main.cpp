@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <string.h>
+#include <math.h>
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -23,9 +24,11 @@ const char* vertexFragmentSource = \
 "#version 330 core\n"
 "in vec4 vertexColor;\n"
 "out vec4 FragColor;\n"
+"uniform vec4 ourColor;\n"
 "void main()\n"
 "{\n"
-"    FragColor = vertexColor;\n"
+"   FragColor = vertexColor;\n"
+"   FragColor = vec4(ourColor.rg, vertexColor.y, 1.0);\n"
 "}\0";
 
 // Callback to resize Viewport
@@ -111,8 +114,11 @@ int main(int argc, char** argv)
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
+    // Use uniform to set color that varies with time -> here just find the location of our new "variable" i.e. uniform
+    int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+
     // Use the program that was just created
-    glUseProgram(shaderProgram);        // Every shader and redering call after will now use this program
+    glUseProgram(shaderProgram);        // Every shader and rendering call after will now use this program
 
     // ------------------------------------
     //          SHAPE
@@ -123,11 +129,11 @@ int main(int argc, char** argv)
          0.5f,  0.5f, 0.0f,  // top right
          0.5f, -0.5f, 0.0f,  // bottom right
         -0.5f, -0.5f, 0.0f,  // bottom left
-        -0.5f,  0.5f, 0.0f   // top left
+        //-0.5f,  0.5f, 0.0f   // top left
     };
     unsigned int indices[] = {
-        0, 1, 3,    // first triangle
-        1, 2, 3
+        0, 1, 2,    // first triangle
+        // 1, 2, 3
     };
 
     unsigned int VBO, EBO, VAO;
@@ -167,8 +173,14 @@ int main(int argc, char** argv)
 
         // Select shader program, bind VAO and draw!
         glUseProgram(shaderProgram);
+
+        float timeValue = glfwGetTime();
+        float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+        float redValue = (cos(timeValue) / 2.0f) + 0.5f;
+        glUniform4f(vertexColorLocation, redValue, greenValue, 0.0f, 1.0f);
+
         glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
         // glDrawArrays(GL_TRIANGLES, 0, 3);
 
         // swap buffers and poll IO events (key pressed/released, ...)
