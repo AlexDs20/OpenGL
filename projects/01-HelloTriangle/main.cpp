@@ -1,6 +1,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <string.h>
+
+const unsigned int SCR_WIDTH = 800;
+const unsigned int SCR_HEIGHT = 600;
 
 // vertex shader -> convert to normalized device coordinate is the main goal
 const char* vertexShaderSource = \
@@ -18,7 +22,7 @@ const char* vertexFragmentSource = \
 "void main()\n"
 "{\n"
 "    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-"}\n";
+"}\0";
 
 // Callback to resize Viewport
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -32,6 +36,9 @@ int logProgramLink(const unsigned int shaderProgram);
 
 int main(int argc, char** argv)
 {
+    // ------------------------------------
+    //      Init glfw, glad, window
+    // ------------------------------------
     // glfw: initialize and configure
     // ----------------------------------
     glfwInit();
@@ -41,7 +48,7 @@ int main(int argc, char** argv)
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
 
     if (window == NULL)
     {
@@ -61,26 +68,9 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    // shader stuff
-    // ------------
-    //  Triangle vertices in Normalized Device Coordinates /output of vertex shader has to be in it
-    float vertices[] {
-        -0.5f, -0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f,
-         0.0f,  0.5f, 0.0f,
-    };
-
-    // generate vertex buffer object
-    unsigned int VBO;
-    glGenBuffers(1, &VBO);
-
-    // and then bind it. Only can bind one type at a time.
-    // All operations on a GL_ARRAY_BUFFER will be done on VBO as it is currently bound.
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-    // copy vertex data into buffer's memory
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
+    // ------------------------------------
+    //      SHADER
+    // ------------------------------------
     // compile vertex shader
     unsigned int vertexShader;
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -119,6 +109,30 @@ int main(int argc, char** argv)
     // Use the program that was just created
     glUseProgram(shaderProgram);        // Every shader and redering call after will now use this program
 
+
+    // ------------------------------------
+    //          SHAPE
+    // ------------------------------------
+    //      Triangle
+    // ------------------------------------
+    //  Triangle vertices in Normalized Device Coordinates /output of vertex shader has to be in it
+    float vertices[] {
+        -0.5f, -0.5f, 0.0f,
+         0.5f, -0.5f, 0.0f,
+         0.0f,  0.5f, 0.0f,
+    };
+
+    // generate vertex buffer object
+    unsigned int VBO;
+    glGenBuffers(1, &VBO);
+
+    // and then bind it. Only can bind one type at a time.
+    // All operations on a GL_ARRAY_BUFFER will be done on VBO as it is currently bound.
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+    // copy vertex data into buffer's memory
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
     // We can give as many attributes to each vertex, we need to specify clearly what lies where
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     // 0: we set location=0 for the position in vertex shader
@@ -148,7 +162,34 @@ int main(int argc, char** argv)
     glEnableVertexAttribArray(0);
 
     // Draw
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    // glDrawArrays(GL_TRIANGLES, 0, 3);
+
+
+    // ---------------------------------
+    //      Rectangle
+    // ---------------------------------
+    // If we want to draw a rectnagle which is 2 triangle, we have many duplicate vertices
+    // Instead do this:
+    /*
+    float verticesRectangle[] = {
+         0.5f,  0.5f, 0.0f,  // top right
+         0.5f, -0.5f, 0.0f,  // bottom right
+        -0.5f, -0.5f, 0.0f,  // bottom left
+        -0.5f,  0.5f, 0.0f   // top left
+    };
+    unsigned int indices[] = {
+        0, 1, 3,    // first triangle
+        1, 2, 3
+    };
+
+    unsigned int EBO;
+    glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+    */
 
 
     // render loop
