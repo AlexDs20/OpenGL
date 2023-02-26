@@ -4,31 +4,10 @@
 #include <string.h>
 #include <math.h>
 
+#include "shader.hpp"
+
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-
-// vertex shader -> convert to normalized device coordinate is the main goal
-const char* vertexShaderSource = \
-"#version 330 core\n"
-"layout (location = 0) in vec3 aPos;\n"
-"layout (location = 1) in vec3 aColor;\n"
-"out vec3 vertexColor;\n"
-"void main()\n"
-"{\n"
-"   gl_Position = vec4(aPos, 1.0);\n"
-"   vertexColor = aColor;\n"
-"}\0";
-
-// fragment shader -> computing color of pixels is main goal
-const char* vertexFragmentSource = \
-"#version 330 core\n"
-"in vec3 vertexColor;\n"
-"uniform float ourColor;\n"
-"out vec4 FragColor;\n"
-"void main()\n"
-"{\n"
-"   FragColor = ourColor * vec4(vertexColor, 1.0);\n"
-"}\0";
 
 // Callback to resize Viewport
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -75,49 +54,8 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    // ------------------------------------
-    //      SHADER
-    // ------------------------------------
-    // compile vertex shader
-    unsigned int vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-
-    // attach shader src code to shader object and compile
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-
-    // Check if compiled properly and log
-    logShaderCompile(vertexShader, "VERTEX");
-
-    // compile fragment shader
-    unsigned int fragmentShader;
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &vertexFragmentSource, NULL);
-    glCompileShader(fragmentShader);
-
-    // Log error fragment shader compiler
-    logShaderCompile(fragmentShader, "FRAGMENT");
-
-    // We now need a shader program to link the vertex and fragment shaders
-    unsigned int shaderProgram;
-    shaderProgram = glCreateProgram();
-
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-
-    // Log linking errors
-    logProgramLink(shaderProgram);
-
-    // Now that it the shaders are linked into the program -> delete
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
-    // Use uniform to set color that varies with time -> here just find the location of our new "variable" i.e. uniform
-    int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-
-    // Use the program that was just created
-    glUseProgram(shaderProgram);        // Every shader and rendering call after will now use this program
+    Shader ourShader("/home/alexandre/Documents/Projects/OpenGL/projects/02-Shaders/src/vertex.vs", \
+            "/home/alexandre/Documents/Projects/OpenGL/projects/02-Shaders/src/fragment.fs");
 
     // ------------------------------------
     //          SHAPE
@@ -173,11 +111,11 @@ int main(int argc, char** argv)
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Select shader program, bind VAO and draw!
-        glUseProgram(shaderProgram);
+        ourShader.use();
 
         float timeValue = glfwGetTime();
         float scaleValue = (sin(timeValue) / 2.0f);
-        glUniform1f(vertexColorLocation, scaleValue);
+        ourShader.setUniformFloat("ourColor", scaleValue);
 
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

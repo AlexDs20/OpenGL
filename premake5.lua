@@ -107,13 +107,14 @@ project "01-HelloTriangle"
     filter "system:windows"
         defines { "_WINDOWS" }
 
+
 project "02-Shaders"
     kind "WindowedApp"
     language "C++"
 
-    includedirs { "deps/glad/include/", "deps/glfw/include/" }
+    includedirs { "deps/glad/include/", "deps/glfw/include/", "projects/02-Shaders/include"}
 
-    files "projects/%{prj.name}/**"
+    files "projects/%{prj.name}/src/**"
     links{ "GLAD", "GLFW" }
 
     filter "system:linux"
