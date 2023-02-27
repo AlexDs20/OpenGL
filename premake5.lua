@@ -112,7 +112,23 @@ project "02-Shaders"
     kind "WindowedApp"
     language "C++"
 
-    includedirs { "deps/glad/include/", "deps/glfw/include/", "projects/02-Shaders/include"}
+    includedirs { "deps/glad/include/", "deps/glfw/include/", "projects/%{prj.name}/include"}
+
+    files "projects/%{prj.name}/src/**"
+    links{ "GLAD", "GLFW" }
+
+    filter "system:linux"
+        links{ "dl", "pthread"}
+
+        defines{ "_X11" }
+
+    filter "system:windows"
+        defines { "_WINDOWS" }
+
+project "03-Textures"
+    kind "WindowedApp"
+    language "C++"
+    includedirs { "deps/glad/include/", "deps/glfw/include/", "projects/%{prj.name}/include"}
 
     files "projects/%{prj.name}/src/**"
     links{ "GLAD", "GLFW" }
