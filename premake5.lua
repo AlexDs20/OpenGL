@@ -39,6 +39,7 @@ workspace "Hello Premake"
 
 include "deps/glfw.lua"
 include "deps/glad.lua"
+include "deps/stb.lua"
 
 
 -- Our first project, the static library
@@ -128,10 +129,14 @@ project "02-Shaders"
 project "03-Textures"
     kind "WindowedApp"
     language "C++"
-    includedirs { "deps/glad/include/", "deps/glfw/include/", "projects/%{prj.name}/include"}
+    includedirs {
+            "deps/stb/",
+            "deps/glad/include/",
+            "deps/glfw/include/",
+            "projects/%{prj.name}/include"}
 
     files "projects/%{prj.name}/src/**"
-    links{ "GLAD", "GLFW" }
+    links{ "STB", "GLAD", "GLFW" }
 
     filter "system:linux"
         links{ "dl", "pthread"}
