@@ -59,7 +59,10 @@ int main(int argc, char** argv)
     Shader ourShader("/home/alexandre/Documents/Projects/OpenGL/projects/03-Textures/src/vertex.vs", \
             "/home/alexandre/Documents/Projects/OpenGL/projects/03-Textures/src/fragment.fs");
 
-    // texture
+    // --------
+    // TEXTURES
+    // --------
+    // texture 1
     int width, height, n_channels;
     unsigned char *data = stbi_load("/home/alexandre/Documents/Projects/OpenGL/projects/03-Textures/src/container.jpg",
             &width,
@@ -67,9 +70,10 @@ int main(int argc, char** argv)
             &n_channels,
             0);
 
-    unsigned int texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    unsigned int texture1;
+    glGenTextures(1, &texture1);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture1);
     // set parameters of texture
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);   // repeat along x=s
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);   // repeat along y=t
@@ -78,6 +82,32 @@ int main(int argc, char** argv)
     if (data)
     {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture!" << std::endl;
+    }
+    stbi_image_free(data);
+    // texture 2
+    data = stbi_load("/home/alexandre/Documents/Projects/OpenGL/projects/03-Textures/src/awesomeface.png",
+            &width,
+            &height,
+            &n_channels,
+            0);
+
+    unsigned int texture2;
+    glGenTextures(1, &texture2);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, texture2);
+    // set parameters of texture
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);   // repeat along x=s
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);   // repeat along y=t
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    if (data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
     else
@@ -152,8 +182,13 @@ int main(int argc, char** argv)
         float timeValue = glfwGetTime();
         float scaleValue = (sin(timeValue) / 2.0f);
         ourShader.setUniformFloat("ourColor", scaleValue);
+        ourShader.setUniformInt("texture1", 0);
+        ourShader.setUniformInt("texture2", 1);
 
-        glBindTexture(GL_TEXTURE_2D, texture);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture1);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texture2);
 
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
