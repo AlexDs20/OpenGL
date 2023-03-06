@@ -90,6 +90,7 @@ int main(int argc, char** argv)
     }
     stbi_image_free(data);
     // texture 2
+    stbi_set_flip_vertically_on_load(true);
     data = stbi_load("/home/alexandre/Documents/Projects/OpenGL/projects/03-Textures/src/awesomeface.png",
             &width,
             &height,
@@ -115,6 +116,10 @@ int main(int argc, char** argv)
         std::cout << "Failed to load texture!" << std::endl;
     }
     stbi_image_free(data);
+
+    ourShader.use();
+    ourShader.setUniformInt("texture1", 0);
+    ourShader.setUniformInt("texture2", 1);
 
     // ------------------------------------
     //          SHAPE
@@ -182,8 +187,6 @@ int main(int argc, char** argv)
         float timeValue = glfwGetTime();
         float scaleValue = (sin(timeValue) / 2.0f);
         ourShader.setUniformFloat("ourColor", scaleValue);
-        ourShader.setUniformInt("texture1", 0);
-        ourShader.setUniformInt("texture2", 1);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture1);
@@ -202,8 +205,11 @@ int main(int argc, char** argv)
 
     // glfw: terminate, clear all previous allocated GLFW resources
     // ------------------------------------------------------------
-    glfwTerminate();
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
 
+    glfwTerminate();
     return 0;
 }
 
