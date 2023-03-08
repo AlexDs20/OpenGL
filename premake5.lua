@@ -40,6 +40,7 @@ workspace "Hello Premake"
 include "deps/glfw.lua"
 include "deps/glad.lua"
 include "deps/stb.lua"
+include "deps/glm.lua"
 
 
 -- Our first project, the static library
@@ -146,10 +147,11 @@ project "04-Transformations"
             "deps/stb/",
             "deps/glad/include/",
             "deps/glfw/include/",
+            "deps/glm/",
             "projects/%{prj.name}/include"}
 
     files "projects/%{prj.name}/src/**"
-    links{ "STB", "GLAD", "GLFW" }
+    links{ "STB", "GLAD", "GLFW", "GLM" }
 
     filter "system:linux"
         defines{ "_X11" }
