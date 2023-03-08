@@ -13,8 +13,10 @@
 #include "shader.hpp"
 #include "utils.hpp"
 
+
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
+
 
 int main(int argc, char** argv)
 {
@@ -54,28 +56,66 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    Shader ourShader("/home/alexandre/Documents/Projects/OpenGL/projects/03-Textures/src/vertex.vs", \
-            "/home/alexandre/Documents/Projects/OpenGL/projects/03-Textures/src/fragment.fs");
+    Shader ourShader("/home/alexandre/Documents/Projects/OpenGL/projects/04-Transformations/src/vertex.vs", \
+            "/home/alexandre/Documents/Projects/OpenGL/projects/04-Transformations/src/fragment.fs");
+
+    // ------------------------------------
+    //          SHAPE
+    // ------------------------------------
+    float vertices[] = {
+        // positions          // texture coords
+         0.5f,  0.5f, 0.0f,   1.0f, 1.0f, // top right
+         0.5f, -0.5f, 0.0f,   1.0f, 0.0f, // bottom right
+        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, // bottom left
+        -0.5f,  0.5f, 0.0f,   0.0f, 1.0f  // top left
+    };
+    unsigned int indices[] = {
+        0, 1, 3, // first triangle
+        1, 2, 3  // second triangle
+    };
+
+    unsigned int VBO, EBO, VAO;
+
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)3);
+    //glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     // --------
     // TEXTURES
     // --------
+    unsigned int texture1;
+    glGenTextures(1, &texture1);
+    glBindTexture(GL_TEXTURE_2D, texture1);
+    //
+    // set parameters of texture
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);   // repeat along x=s
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);   // repeat along y=t
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
     int width, height, n_channels;
-    unsigned char *data = stbi_load("/home/alexandre/Documents/Projects/OpenGL/projects/03-Textures/src/container.jpg",
+    unsigned char *data = stbi_load("/home/alexandre/Documents/Projects/OpenGL/projects/04-Transformations/src/container.jpg",
             &width,
             &height,
             &n_channels,
             0);
-
-    unsigned int texture1;
-    glGenTextures(1, &texture1);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture1);
-    // set parameters of texture
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);   // repeat along x=s
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);   // repeat along y=t
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     if (data)
     {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -86,51 +126,13 @@ int main(int argc, char** argv)
         std::cout << "Failed to load texture!" << std::endl;
     }
     stbi_image_free(data);
-    ourShader.use();
-    ourShader.setUniformInt("texture1", 0);
-
-    // ------------------------------------
-    //          SHAPE
-    // ------------------------------------
-    // If we want to draw a rectnagle which is 2 triangle, we have many duplicate vertices
-    // Instead do this:
-    float vertices[] = {
-        -0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  0.0f, 0.0f,     // bottom left
-         0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f,     // bottom right
-         0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f,  0.5f, 1.0f,     // top middle
-    };
-
-    unsigned int indices[] = {
-        0, 1, 2,    // first triangle
-    };
-
-    unsigned int VBO, EBO, VAO;
-
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &EBO);
-    glGenBuffers(1, &VBO);
-
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
 
     // wireframe mode, good for debugging
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    ourShader.use();
+    ourShader.setInt("texture1", 0);
 
     // render loop
     // -----------
@@ -143,18 +145,24 @@ int main(int argc, char** argv)
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // Select shader program, bind VAO and draw!
-        ourShader.use();
-
-        float timeValue = glfwGetTime();
-        float scaleValue = (sin(timeValue) / 2.0f);
-        ourShader.setUniformFloat("ourColor", scaleValue);
-
+        // bin textures on corresponding texture units
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture1);
 
+
+        // transform
+        float time = glfwGetTime();
+        glm::mat4 transform(1.0f);
+        transform = glm::translate(transform, glm::vec3(0.5, 0.5, 0.0));
+        transform = glm::rotate(transform, time, glm::vec3(0.0, 0.0, 1.0));
+        transform = glm::scale(transform, glm::vec3(glm::abs(glm::sin(time))));
+
+        // Select shader program, bind VAO and draw!
+        ourShader.use();
+        ourShader.setMat4f("transform", transform);
+
         glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // swap buffers and poll IO events (key pressed/released, ...)
         // -----------------------------------------------------------
