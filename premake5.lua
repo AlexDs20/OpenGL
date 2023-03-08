@@ -76,7 +76,6 @@ project "TestOpenGL"
 
 project "00-HelloWindow"
     kind "WindowedApp"
-    language "C++"
 
     includedirs { "deps/glad/include/", "deps/glfw/include/" }
 
@@ -93,7 +92,6 @@ project "00-HelloWindow"
 
 project "01-HelloTriangle"
     kind "WindowedApp"
-    language "C++"
 
     includedirs { "deps/glad/include/", "deps/glfw/include/" }
 
@@ -101,8 +99,6 @@ project "01-HelloTriangle"
     links{ "GLAD", "GLFW" }
 
     filter "system:linux"
-        links{ "dl", "pthread"}
-
         defines{ "_X11" }
 
     filter "system:windows"
@@ -111,16 +107,15 @@ project "01-HelloTriangle"
 
 project "02-Shaders"
     kind "WindowedApp"
-    language "C++"
 
-    includedirs { "deps/glad/include/", "deps/glfw/include/", "projects/%{prj.name}/include"}
+    includedirs { "deps/glad/include/",
+                  "deps/glfw/include/",
+                  "projects/%{prj.name}/include"}
 
     files "projects/%{prj.name}/src/**"
     links{ "GLAD", "GLFW" }
 
     filter "system:linux"
-        links{ "dl", "pthread"}
-
         defines{ "_X11" }
 
     filter "system:windows"
@@ -128,7 +123,7 @@ project "02-Shaders"
 
 project "03-Textures"
     kind "WindowedApp"
-    language "C++"
+
     includedirs {
             "deps/stb/",
             "deps/glad/include/",
@@ -139,9 +134,28 @@ project "03-Textures"
     links{ "STB", "GLAD", "GLFW" }
 
     filter "system:linux"
-        links{ "dl", "pthread"}
-
         defines{ "_X11" }
 
     filter "system:windows"
         defines { "_WINDOWS" }
+
+project "04-Transformations"
+    kind "WindowedApp"
+
+    includedirs {
+            "deps/stb/",
+            "deps/glad/include/",
+            "deps/glfw/include/",
+            "projects/%{prj.name}/include"}
+
+    files "projects/%{prj.name}/src/**"
+    links{ "STB", "GLAD", "GLFW" }
+
+    filter "system:linux"
+        defines{ "_X11" }
+
+    filter "system:windows"
+        defines { "_WINDOWS" }
+
+    filter "system:MAC"
+        defines { "_MAC" }

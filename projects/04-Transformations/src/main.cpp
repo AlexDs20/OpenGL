@@ -7,20 +7,10 @@
 #include <math.h>
 
 #include "shader.hpp"
+#include "utils.hpp"
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-
-// Callback to resize Viewport
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-
-// Process Input and how to handle it
-void processInput(GLFWwindow* window);
-
-int logShaderCompile(const unsigned int shaderId, const char* shaderType);
-
-int logProgramLink(const unsigned int shaderProgram);
-
 
 int main(int argc, char** argv)
 {
@@ -33,6 +23,10 @@ int main(int argc, char** argv)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+#ifdef _MAC
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT_GL_TRUE);
+#endif
 
     // glfw window creation
     // --------------------
@@ -157,7 +151,6 @@ int main(int argc, char** argv)
 
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
-        // glDrawArrays(GL_TRIANGLES, 0, 3);
 
         // swap buffers and poll IO events (key pressed/released, ...)
         // -----------------------------------------------------------
@@ -174,42 +167,3 @@ int main(int argc, char** argv)
     glfwTerminate();
     return 0;
 }
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-    glViewport(0, 0, width, height);
-}
-
-void processInput(GLFWwindow* window)
-{
-    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-}
-
-int logShaderCompile(const unsigned int shaderId, const char* shaderType)
-{
-    int success;
-    char infoLog[512];
-    glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
-
-    if (!success)
-    {
-        glGetShaderInfoLog(shaderId, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::" << shaderType << "::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-    return success;
-};
-
-int logProgramLink(const unsigned int shaderProgram)
-{
-    int success;
-    char infoLog[512];
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-
-    if (!success)
-    {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << "ERROR::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-    }
-    return success;
-};
