@@ -47,7 +47,6 @@ int main(int argc, char** argv)
     glfwMakeContextCurrent( window );
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-
     // glad: load all OpenGL function pointers
     // ---------------------------------------
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -134,6 +133,14 @@ int main(int argc, char** argv)
     ourShader.use();
     ourShader.setInt("texture1", 0);
 
+    glm::mat4 model = glm::mat4(1.0f);
+    glm::mat4 view = glm::mat4(1.0f);
+    glm::mat4 proj;
+    model = glm::rotate(model, glm::radians(-60.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+    proj = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+    //proj = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
+
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -160,6 +167,10 @@ int main(int argc, char** argv)
         // Select shader program, bind VAO and draw!
         ourShader.use();
         ourShader.setMat4f("transform", transform);
+        model = glm::rotate(model, glm::abs(glm::sin(time/600.0f)), glm::vec3(1.0f, 0.0f, 0.0f));
+        ourShader.setMat4f("model", model);
+        ourShader.setMat4f("view", view);
+        ourShader.setMat4f("proj", proj);
 
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
