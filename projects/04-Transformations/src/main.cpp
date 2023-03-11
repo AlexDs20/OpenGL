@@ -61,16 +61,71 @@ int main(int argc, char** argv)
     // ------------------------------------
     //          SHAPE
     // ------------------------------------
-    float vertices[] = {
-        // positions          // texture coords
-         0.5f,  0.5f, 0.0f,   1.0f, 1.0f, // top right
-         0.5f, -0.5f, 0.0f,   1.0f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, // bottom left
-        -0.5f,  0.5f, 0.0f,   0.0f, 1.0f  // top left
+    // float vertices[] = {
+    //     // positions          // texture coords
+    //      0.5f,  0.5f, 0.0f,   1.0f, 1.0f, // top right
+    //      0.5f, -0.5f, 0.0f,   1.0f, 0.0f, // bottom right
+    //     -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, // bottom left
+    //     -0.5f,  0.5f, 0.0f,   0.0f, 1.0f  // top left
+    // };
+    // unsigned int indices[] = {
+    //     0, 1, 3, // first triangle
+    //     1, 2, 3  // second triangle
+    // };
+
+    float vertices[] =
+    {
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,          // Nearest face, bottom first up then
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,          // Back face, bottom first up then
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+
+        -0.5f,  0.5f, -0.5f,  0.0f, 0.0f,           // TOP
+         0.5f,  0.5f, -0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+
+        -0.5f,  -0.5f, -0.5f,  0.0f, 0.0f,           // Bottom
+         0.5f,  -0.5f, -0.5f,  1.0f, 0.0f,
+        -0.5f,  -0.5f,  0.5f,  0.0f, 1.0f,
+         0.5f,  -0.5f,  0.5f,  1.0f, 1.0f,
+
+         -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,          //  LEFT
+         -0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         -0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+
+          0.5f, -0.5f, -0.5f,  0.0f, 0.0f,          //  LEFT
+          0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+          0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+          0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+
+
     };
+
     unsigned int indices[] = {
-        0, 1, 3, // first triangle
-        1, 2, 3  // second triangle
+        0, 1, 2, // first triangle
+        1, 2, 3, // second triangle
+
+        4, 5, 6,
+        5, 6, 7,
+
+        8, 9, 10,
+        9, 10, 11,
+
+        12, 13, 14,
+        13, 14, 15,
+
+        16, 17, 18,
+        17, 18, 19,
+
+        20, 21, 22,
+        21, 22, 23,
     };
 
     unsigned int VBO, EBO, VAO;
@@ -136,10 +191,11 @@ int main(int argc, char** argv)
     glm::mat4 model = glm::mat4(1.0f);
     glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 proj;
-    model = glm::rotate(model, glm::radians(-60.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+    model = glm::rotate(model, glm::radians(90.0f), glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)));
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -10.0f));
     proj = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-    //proj = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
+
+    glEnable(GL_DEPTH_TEST);
 
     // render loop
     // -----------
@@ -150,7 +206,7 @@ int main(int argc, char** argv)
 
         // rendering commands
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // bin textures on corresponding texture units
         glActiveTexture(GL_TEXTURE0);
@@ -168,12 +224,14 @@ int main(int argc, char** argv)
         ourShader.use();
         ourShader.setMat4f("transform", transform);
         model = glm::rotate(model, glm::abs(glm::sin(time/600.0f)), glm::vec3(1.0f, 0.0f, 0.0f));
+        model = glm::rotate(model, glm::abs(glm::sin(time/300.0f)), glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)));
         ourShader.setMat4f("model", model);
         ourShader.setMat4f("view", view);
         ourShader.setMat4f("proj", proj);
 
         glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        //glDrawArrays(GL_TRIANGLES, 0, 36);
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
         // swap buffers and poll IO events (key pressed/released, ...)
         // -----------------------------------------------------------
