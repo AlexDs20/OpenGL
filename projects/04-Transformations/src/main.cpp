@@ -240,6 +240,7 @@ int main(int argc, char** argv)
         ourShader.setMat4f("view", view);
         ourShader.setMat4f("proj", proj);
 
+        glBindVertexArray(VAO);
         for (unsigned int i=0; i<10; ++i)
         {
             glm::mat4 model = glm::mat4(1.0f);
@@ -250,7 +251,6 @@ int main(int argc, char** argv)
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         }
 
-        glBindVertexArray(VAO);
         //glDrawArrays(GL_TRIANGLES, 0, 36);
 
         // swap buffers and poll IO events (key pressed/released, ...)

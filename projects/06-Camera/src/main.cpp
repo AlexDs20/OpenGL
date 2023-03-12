@@ -17,6 +17,10 @@
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
 
 int main(int argc, char** argv)
 {
@@ -202,19 +206,10 @@ int main(int argc, char** argv)
     ourShader.use();
     ourShader.setInt("texture1", 0);
 
-    // Camera
-    glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);
-
-    // coordinates
-    glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-    //glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
-    glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-    //glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
-    //glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
-
-    glm::mat4 view = glm::lookAt(cameraPos, cameraTarget, up);
-
+    // Transforms
     glm::mat4 proj;
+    glm::mat4 view;
+    glm::mat4 model;
     proj = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
     glEnable(GL_DEPTH_TEST);
@@ -240,17 +235,14 @@ int main(int argc, char** argv)
         ourShader.use();
         ourShader.setMat4f("proj", proj);
 
-        const float radius = 10.0f;
-        float camX = sin(time) * radius;
-        float camZ = cos(time) * radius;
-        view = glm::lookAt(glm::vec3(camX, 0.0f, camZ), cameraTarget, up);
+        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
         ourShader.setMat4f("view", view);
 
         glBindVertexArray(VAO);
         // Go through each box to render
         for (unsigned int i=0; i<10; ++i)
         {
-            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::mat4(1.0f);
             model = glm::translate(model, cubePositions[i]);
             float angle = 20.0f * i+1;
             model = glm::rotate(model, glm::radians(angle*time), glm::normalize(glm::vec3(0.4f, 1.0f, 0.3f)));
