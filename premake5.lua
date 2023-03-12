@@ -161,3 +161,27 @@ project "04-Transformations"
 
     filter "system:MAC"
         defines { "_MAC" }
+
+project "06-Camera"
+    kind "WindowedApp"
+
+    includedirs
+    {
+        "deps/stb",
+        "deps/glad/include",
+        "deps/glfw/include",
+        "deps/glm",
+        "projects/%{prj.name}/include",
+    }
+
+    files "projects/%{prj.name}/src/**"
+    links{ "STB", "GLAD", "GLFW", "GLM" }
+
+    filter "system:linux"
+        defines{ "_X11" }
+
+    filter "system:windows"
+        defines { "_WINDOWS" }
+
+    filter "system:MAC"
+        defines { "_MAC" }
