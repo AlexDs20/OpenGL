@@ -28,8 +28,6 @@ bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
-// Mouse mouvement
-const float sensitivity = 0.1f;
 
 int main(int argc, char** argv)
 {
@@ -73,8 +71,8 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    Shader ourShader("/home/alexandre/Documents/Projects/OpenGL/projects/04-Transformations/src/vertex.vs", \
-            "/home/alexandre/Documents/Projects/OpenGL/projects/04-Transformations/src/fragment.fs");
+    Shader ourShader("/home/alexandre/Documents/Projects/OpenGL/projects/06-Camera/src/vertex.vs", \
+            "/home/alexandre/Documents/Projects/OpenGL/projects/06-Camera/src/fragment.fs");
 
     // ------------------------------------
     //          SHAPE
