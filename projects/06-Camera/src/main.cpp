@@ -21,6 +21,18 @@ glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
+// Frame time (so that movement is same regardless of fps)
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
+
+// wasd speed
+float wasd_speed = 3.0f;
+float fov = 45.0f;
+
+// Mouse mouvement
+float lastX = SCR_WIDTH/2, lastY = SCR_HEIGHT/2;
+const float sensitivity = 0.1f;
+float pitch = 0, yaw = 0;
 
 int main(int argc, char** argv)
 {
@@ -51,6 +63,11 @@ int main(int argc, char** argv)
     glfwMakeContextCurrent( window );
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, scroll_callback);
+
+
     // glad: load all OpenGL function pointers
     // ---------------------------------------
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -65,18 +82,6 @@ int main(int argc, char** argv)
     // ------------------------------------
     //          SHAPE
     // ------------------------------------
-    // float vertices[] = {
-    //     // positions          // texture coords
-    //      0.5f,  0.5f, 0.0f,   1.0f, 1.0f, // top right
-    //      0.5f, -0.5f, 0.0f,   1.0f, 0.0f, // bottom right
-    //     -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, // bottom left
-    //     -0.5f,  0.5f, 0.0f,   0.0f, 1.0f  // top left
-    // };
-    // unsigned int indices[] = {
-    //     0, 1, 3, // first triangle
-    //     1, 2, 3  // second triangle
-    // };
-
     float vertices[] =
     {
         -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,          // Front, bottom first up then     2---3
@@ -210,7 +215,6 @@ int main(int argc, char** argv)
     glm::mat4 proj;
     glm::mat4 view;
     glm::mat4 model;
-    proj = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
     glEnable(GL_DEPTH_TEST);
 
@@ -218,6 +222,10 @@ int main(int argc, char** argv)
     // -----------
     while (!glfwWindowShouldClose(window))
     {
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
         // process inputs
         processInput(window);
 
@@ -233,6 +241,8 @@ int main(int argc, char** argv)
 
         // Select shader program, bind VAO and draw!
         ourShader.use();
+
+        proj = glm::perspective(glm::radians(fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         ourShader.setMat4f("proj", proj);
 
         view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
