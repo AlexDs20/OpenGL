@@ -2,27 +2,20 @@
 #define UTILS_H
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include "camera.hpp"
 
-extern glm::vec3 cameraPos;
-extern glm::vec3 cameraFront;
-extern glm::vec3 cameraUp;
+extern Camera camera;
+extern float lastX, lastY;
+extern bool firstMouse;
 
 extern float deltaTime;
 extern float lastFrame;
-
-extern float wasd_speed;
-extern float fov;
-
-extern float lastX, lastY;
-extern float pitch, yaw;
-extern const float sensitivity;
 
 // Callback to resize Viewport
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 // Callback for the mouse input
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
-
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 // Process Input and how to handle it

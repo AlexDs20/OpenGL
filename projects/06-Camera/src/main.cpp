@@ -11,28 +11,25 @@
 #include <math.h>
 
 #include "shader.hpp"
+#include "camera.hpp"
 #include "utils.hpp"
 
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+// camera
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+float lastX = SCR_WIDTH / 2.0f;
+float lastY = SCR_HEIGHT / 2.0f;
+bool firstMouse = true;
 
 // Frame time (so that movement is same regardless of fps)
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
-// wasd speed
-float wasd_speed = 3.0f;
-float fov = 45.0f;
-
 // Mouse mouvement
-float lastX = SCR_WIDTH/2, lastY = SCR_HEIGHT/2;
 const float sensitivity = 0.1f;
-float pitch = 0, yaw = 0;
 
 int main(int argc, char** argv)
 {
@@ -242,10 +239,10 @@ int main(int argc, char** argv)
         // Select shader program, bind VAO and draw!
         ourShader.use();
 
-        proj = glm::perspective(glm::radians(fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        proj = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         ourShader.setMat4f("proj", proj);
 
-        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        view = camera.GetViewMatrix();
         ourShader.setMat4f("view", view);
 
         glBindVertexArray(VAO);
