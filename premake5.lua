@@ -25,6 +25,15 @@ workspace "Hello Premake"
         -- Release should be optimized
         optimize "On"
 
+    filter "system:linux"
+        defines{ "_X11" }
+
+    filter "system:windows"
+        defines { "_WINDOWS" }
+
+    filter "system:MAC"
+        defines { "_MAC" }
+
     -- Reset the filter for other settings
     filter { }
 
@@ -50,3 +59,4 @@ include "projects/02-Shaders/"
 include "projects/03-Textures/"
 include "projects/04-Transformations/"
 include "projects/06-Camera/"
+include "projects/10-Colors/"
