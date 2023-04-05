@@ -17,8 +17,8 @@
 #include "utils.hpp"
 
 
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_WIDTH = 1024;
+const unsigned int SCR_HEIGHT = 768;
 
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 5.0f));
@@ -84,35 +84,35 @@ int main(int argc, char** argv)
     // ------------------------------------
     float vertices[] =
     {
-        -0.5f, -0.5f, -0.5f,          // Front, bottom first up then     2---3
-         0.5f, -0.5f, -0.5f,          //                                 | \ |
-        -0.5f,  0.5f, -0.5f,          //                                 0---1
-         0.5f,  0.5f, -0.5f,
+        -0.5f, -0.5f, -0.5f,   0.0f,  0.0f, -1.0f,         // Front, bottom first up then     2---3
+         0.5f, -0.5f, -0.5f,   0.0f,  0.0f, -1.0f,         //                                 | \ |
+        -0.5f,  0.5f, -0.5f,   0.0f,  0.0f, -1.0f,         //                                 0---1
+         0.5f,  0.5f, -0.5f,   0.0f,  0.0f, -1.0f,
 
-        -0.5f, -0.5f,  0.5f,          // Back, bottom first up then
-         0.5f, -0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
-         0.5f,  0.5f,  0.5f,
+        -0.5f, -0.5f,  0.5f,   0.0f,  0.0f,  1.0f,         // Back, bottom first up then
+         0.5f, -0.5f,  0.5f,   0.0f,  0.0f,  1.0f,
+        -0.5f,  0.5f,  0.5f,   0.0f,  0.0f,  1.0f,
+         0.5f,  0.5f,  0.5f,   0.0f,  0.0f,  1.0f,
 
-        -0.5f,  0.5f, -0.5f,           // TOP
-         0.5f,  0.5f, -0.5f,
-        -0.5f,  0.5f,  0.5f,
-         0.5f,  0.5f,  0.5f,
+        -0.5f,  0.5f, -0.5f,   0.0f,  1.0f,  0.0f,          // TOP
+         0.5f,  0.5f, -0.5f,   0.0f,  1.0f,  0.0f,
+        -0.5f,  0.5f,  0.5f,   0.0f,  1.0f,  0.0f,
+         0.5f,  0.5f,  0.5f,   0.0f,  1.0f,  0.0f,
 
-        -0.5f,  -0.5f, -0.5f,           // Bottom
-         0.5f,  -0.5f, -0.5f,
-        -0.5f,  -0.5f,  0.5f,
-         0.5f,  -0.5f,  0.5f,
+        -0.5f,  -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,           // Bottom
+         0.5f,  -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+        -0.5f,  -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+         0.5f,  -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
 
-         -0.5f, -0.5f, -0.5f,          //  LEFT
-         -0.5f, -0.5f,  0.5f,
-         -0.5f,  0.5f, -0.5f,
-         -0.5f,  0.5f,  0.5f,
+         -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,          //  LEFT
+         -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+         -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+         -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
 
-          0.5f, -0.5f, -0.5f,          //  Right
-          0.5f, -0.5f,  0.5f,
-          0.5f,  0.5f, -0.5f,
-          0.5f,  0.5f,  0.5f,
+          0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,          //  Right
+          0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+          0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+          0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
     };
 
     unsigned int indices[] = {
@@ -135,7 +135,6 @@ int main(int argc, char** argv)
         21, 22, 23,
     };
 
-
     std::vector<glm::vec3> cubePositions = {
         glm::vec3( 0.0f,  0.0f,  -2.0f),
         glm::vec3( 1.0f,  1.0f, -5.0f),
@@ -156,8 +155,11 @@ int main(int argc, char** argv)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*) (3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     // light
     unsigned int lightVAO;
@@ -166,7 +168,7 @@ int main(int argc, char** argv)
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
     // wireframe mode, good for debugging
@@ -174,7 +176,7 @@ int main(int argc, char** argv)
     // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     // Define light stuff
-    glm::vec3 lightPos(-1.5f, 0.2f, -0.5f);
+    glm::vec3 lightPos(-1.5f, 1.2f, -0.5f);
     glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
 
     glm::vec3 blockColor(1.0f, 0.5f, 0.31f);
@@ -209,16 +211,18 @@ int main(int argc, char** argv)
         blockShader.use();
         blockShader.set3f("objectColor", blockColor);
         blockShader.set3f("lightColor", lightColor);
+        blockShader.set3f("lightPos", lightPos);    // This lightPos should probably be transformed and not just taken from this...
+        blockShader.set3f("viewPos", camera.Position);
         blockShader.setMat4f("proj", proj);
         blockShader.setMat4f("view", view);
 
         glBindVertexArray(VAO);
         // Go through each box to render
-        for (unsigned int i=0; i!=cubePositions.size(); ++i)
+        for (std::vector<glm::vec3>::size_type i=0; i!=cubePositions.size(); ++i)
         {
             model = glm::mat4(1.0f);
             model = glm::translate(model, cubePositions[i]);
-            float angle = 20.0f * i+1;
+            float angle = 20.0f * (i+1);
             model = glm::rotate(model, glm::radians(angle*time), glm::normalize(glm::vec3(0.4f, 1.0f, 0.3f)));
             blockShader.setMat4f("model", model);
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
