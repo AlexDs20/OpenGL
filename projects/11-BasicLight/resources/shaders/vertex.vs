@@ -7,10 +7,6 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 proj;
 
-// viewPos is here needed only because we compute the lighting in world space and not viewspace
-// We can actually compute in view space and not need viewPos here because viewPos is always (0,0,0) in that case.
-uniform vec3 viewPos;
-
 out vec3 FragPos;
 out vec3 Normal;
 

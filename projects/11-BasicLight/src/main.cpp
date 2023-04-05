@@ -207,11 +207,16 @@ int main(int argc, char** argv)
         proj = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         view = camera.GetViewMatrix();
 
+        // Rotate the light
+        lightPos.x = sin(time) * 2.0f;
+        lightPos.y = cos(time/2.0) * 2.0f;
+        lightPos.z = sin(time / 2.0) * cos(time / 2.0) * 3.0;
+
         // Select shader program, bind VAO and draw!
         blockShader.use();
         blockShader.set3f("objectColor", blockColor);
         blockShader.set3f("lightColor", lightColor);
-        blockShader.set3f("lightPos", lightPos);    // This lightPos should probably be transformed and not just taken from this...
+        blockShader.set3f("lightPos", lightPos);
         blockShader.set3f("viewPos", camera.Position);
         blockShader.setMat4f("proj", proj);
         blockShader.setMat4f("view", view);
@@ -239,7 +244,6 @@ int main(int argc, char** argv)
         lightShader.setMat4f("view", view);
         glBindVertexArray(lightVAO);
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-
 
         // swap buffers and poll IO events (key pressed/released, ...)
         // -----------------------------------------------------------
