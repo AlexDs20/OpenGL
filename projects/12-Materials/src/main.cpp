@@ -17,8 +17,8 @@
 #include "utils.hpp"
 
 
-const unsigned int SCR_WIDTH = 1024;
-const unsigned int SCR_HEIGHT = 768;
+const unsigned int SCR_WIDTH = 1920;
+const unsigned int SCR_HEIGHT = 1080;
 
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 5.0f));
@@ -29,7 +29,6 @@ bool firstMouse = true;
 // Frame time (so that movement is same regardless of fps)
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
-
 
 int main(int argc, char** argv)
 {
@@ -73,11 +72,11 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    Shader blockShader("../projects/11-BasicLight/resources/shaders/vertex.vs", \
-            "../projects/11-BasicLight/resources/shaders/fragment.fs");
+    Shader blockShader("../projects/12-Materials/resources/shaders/vertex.vs", \
+            "../projects/12-Materials/resources/shaders/fragment.fs");
 
-    Shader lightShader("../projects/11-BasicLight/resources/shaders/light_cube.vs", \
-            "../projects/11-BasicLight/resources/shaders/light_cube.fs");
+    Shader lightShader("../projects/12-Materials/resources/shaders/light_cube.vs", \
+            "../projects/12-Materials/resources/shaders/light_cube.fs");
 
     // ------------------------------------
     //          SHAPE
@@ -176,10 +175,10 @@ int main(int argc, char** argv)
     // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     // Define light stuff
-    glm::vec3 lightPos(-1.5f, 1.2f, -0.5f);
     glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
+    glm::vec3 lightPos(-1.5f, 1.2f, -0.5f);
 
-    glm::vec3 blockColor(1.0f, 0.5f, 0.31f);
+    glm::vec3 blockColor(0.8f, 0.5f, 0.61f);
 
     // Transforms
     glm::mat4 proj;
@@ -208,15 +207,23 @@ int main(int argc, char** argv)
         view = camera.GetViewMatrix();
 
         // Rotate the light
-        lightPos.x = sin(time) * 2.0f;
-        lightPos.y = cos(time/2.0) * 2.0f;
-        lightPos.z = sin(time / 2.0) * cos(time / 2.0) * 3.0;
+        lightPos.x = 3.0f * sin(time);
+        // lightPos.y = cos(time/2.0) * 2.0f;
+        lightPos.z = 3.0f * cos(time);
+
+        lightColor.x = abs(sin(time * 2.0f));
+        lightColor.y = abs(cos(time * 0.3f));
+        lightColor.z = abs(sin(time * 1.4f));
+
+        glm::vec3 ambient = lightColor * 0.5f;
+        glm::vec3 diffuse = lightColor * 0.2f;
 
         // Select shader program, bind VAO and draw!
         blockShader.use();
-        blockShader.set3f("objectColor", blockColor);
-        blockShader.set3f("lightColor", lightColor);
-        blockShader.set3f("lightPos", lightPos);
+        blockShader.set3f("light.ambient", ambient);
+        blockShader.set3f("light.diffuse", diffuse);
+        blockShader.set3f("light.specular", lightColor);
+        blockShader.set3f("light.position", lightPos);
         blockShader.set3f("viewPos", camera.Position);
         blockShader.setMat4f("proj", proj);
         blockShader.setMat4f("view", view);
@@ -230,6 +237,10 @@ int main(int argc, char** argv)
             float angle = 20.0f * (i+1);
             model = glm::rotate(model, glm::radians(angle*time), glm::normalize(glm::vec3(0.4f, 1.0f, 0.3f)));
             blockShader.setMat4f("model", model);
+            blockShader.set3f("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
+            blockShader.set3f("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
+            blockShader.set3f("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+            blockShader.setFloat("material.shininess", 32.0f);
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         }
 
