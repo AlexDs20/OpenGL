@@ -176,9 +176,9 @@ int main(int argc, char** argv)
     // --------
     // TEXTURES
     // --------
-    unsigned int texture1;
-    glGenTextures(1, &texture1);
-    glBindTexture(GL_TEXTURE_2D, texture1);
+    unsigned int diffuseMap;
+    glGenTextures(1, &diffuseMap);
+    glBindTexture(GL_TEXTURE_2D, diffuseMap);
     //
     // set parameters of texture
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);   // repeat along x=s
@@ -205,7 +205,7 @@ int main(int argc, char** argv)
     stbi_image_free(data);
 
     blockShader.use();
-    blockShader.setInt("texture1", 0);
+    blockShader.setInt("material.diffuse", 0);
 
     // wireframe mode, good for debugging
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -248,10 +248,6 @@ int main(int argc, char** argv)
         // lightPos.y = cos(time/2.0) * 2.0f;
         lightPos.z = 3.0f * cos(time);
 
-        lightColor.x = abs(sin(time * 2.0f));
-        lightColor.y = abs(cos(time * 0.3f));
-        lightColor.z = abs(sin(time * 1.4f));
-
         glm::vec3 ambient = lightColor * 0.5f;
         glm::vec3 diffuse = lightColor * 0.2f;
 
@@ -264,6 +260,9 @@ int main(int argc, char** argv)
         blockShader.set3f("viewPos", camera.Position);
         blockShader.setMat4f("proj", proj);
         blockShader.setMat4f("view", view);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, diffuseMap);
 
         glBindVertexArray(VAO);
         // Go through each box to render
