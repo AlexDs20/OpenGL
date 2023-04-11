@@ -207,6 +207,35 @@ int main(int argc, char** argv)
     blockShader.use();
     blockShader.setInt("material.diffuse", 0);
 
+    unsigned int specularMap;
+    glGenTextures(1, &specularMap);
+    glBindTexture(GL_TEXTURE_2D, specularMap);
+    //
+    // set parameters of texture
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);   // repeat along x=s
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);   // repeat along y=t
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    data = stbi_load("../projects/13-LightingMaps/resources/container2_specular.png",
+            &width,
+            &height,
+            &n_channels,
+            0);
+    if (data)
+    {
+        // Note these are GL_RGBA not GL_RGB because it's png format, not jpg like before
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture!" << std::endl;
+    }
+    stbi_image_free(data);
+    blockShader.use();
+    blockShader.setInt("material.specular", 1);
+
     // wireframe mode, good for debugging
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -263,6 +292,8 @@ int main(int argc, char** argv)
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, diffuseMap);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, specularMap);
 
         glBindVertexArray(VAO);
         // Go through each box to render
@@ -273,9 +304,9 @@ int main(int argc, char** argv)
             float angle = 20.0f * (i+1);
             model = glm::rotate(model, glm::radians(angle*time), glm::normalize(glm::vec3(0.4f, 1.0f, 0.3f)));
             blockShader.setMat4f("model", model);
-            blockShader.set3f("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
-            blockShader.set3f("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
-            blockShader.set3f("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+            //blockShader.set3f("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
+            //blockShader.set3f("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
+            //blockShader.set3f("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
             blockShader.setFloat("material.shininess", 32.0f);
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         }
