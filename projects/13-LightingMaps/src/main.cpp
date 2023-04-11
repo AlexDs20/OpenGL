@@ -72,8 +72,8 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    Shader blockShader("../projects/13-LightingMaps/resources/shaders/vertex.vs", \
-            "../projects/13-LightingMaps/resources/shaders/fragment.fs");
+    Shader blockShader("../projects/13-LightingMaps/resources/shaders/object_vertex.vs", \
+            "../projects/13-LightingMaps/resources/shaders/object_fragment.fs");
 
     Shader lightShader("../projects/13-LightingMaps/resources/shaders/light_cube.vs", \
             "../projects/13-LightingMaps/resources/shaders/light_cube.fs");
@@ -83,35 +83,35 @@ int main(int argc, char** argv)
     // ------------------------------------
     float vertices[] =
     {
-        -0.5f, -0.5f, -0.5f,   0.0f,  0.0f, -1.0f,         // Front, bottom first up then     2---3
-         0.5f, -0.5f, -0.5f,   0.0f,  0.0f, -1.0f,         //                                 | \ |
-        -0.5f,  0.5f, -0.5f,   0.0f,  0.0f, -1.0f,         //                                 0---1
-         0.5f,  0.5f, -0.5f,   0.0f,  0.0f, -1.0f,
+        -0.5f, -0.5f, -0.5f,   0.0f,  0.0f, -1.0f,   0.0f, 0.0f,        // Front, bottom first up then     2---3
+         0.5f, -0.5f, -0.5f,   0.0f,  0.0f, -1.0f,   1.0f, 0.0f,        //                                 | \ |
+        -0.5f,  0.5f, -0.5f,   0.0f,  0.0f, -1.0f,   0.0f, 1.0f,        //                                 0---1
+         0.5f,  0.5f, -0.5f,   0.0f,  0.0f, -1.0f,   1.0f, 1.0f,
 
-        -0.5f, -0.5f,  0.5f,   0.0f,  0.0f,  1.0f,         // Back, bottom first up then
-         0.5f, -0.5f,  0.5f,   0.0f,  0.0f,  1.0f,
-        -0.5f,  0.5f,  0.5f,   0.0f,  0.0f,  1.0f,
-         0.5f,  0.5f,  0.5f,   0.0f,  0.0f,  1.0f,
+        -0.5f, -0.5f,  0.5f,   0.0f,  0.0f,  1.0f,   0.0f, 0.0f,         // Back, bottom first up then
+         0.5f, -0.5f,  0.5f,   0.0f,  0.0f,  1.0f,   1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,   0.0f,  0.0f,  1.0f,   0.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,   0.0f,  0.0f,  1.0f,   1.0f, 1.0f,
 
-        -0.5f,  0.5f, -0.5f,   0.0f,  1.0f,  0.0f,          // TOP
-         0.5f,  0.5f, -0.5f,   0.0f,  1.0f,  0.0f,
-        -0.5f,  0.5f,  0.5f,   0.0f,  1.0f,  0.0f,
-         0.5f,  0.5f,  0.5f,   0.0f,  1.0f,  0.0f,
+        -0.5f,  0.5f, -0.5f,   0.0f,  1.0f,  0.0f,   0.0f, 0.0f,          // TOP
+         0.5f,  0.5f, -0.5f,   0.0f,  1.0f,  0.0f,   1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,   0.0f,  1.0f,  0.0f,   0.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,   0.0f,  1.0f,  0.0f,   1.0f, 1.0f,
 
-        -0.5f,  -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,           // Bottom
-         0.5f,  -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-        -0.5f,  -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-         0.5f,  -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+        -0.5f,  -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,   0.0f, 0.0f,           // Bottom
+         0.5f,  -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,   1.0f, 0.0f,
+        -0.5f,  -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,   0.0f, 1.0f,
+         0.5f,  -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,   1.0f, 1.0f,
 
-         -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,          //  LEFT
-         -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-         -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-         -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+         -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,   0.0f, 0.0f,          //  LEFT
+         -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,   1.0f, 0.0f,
+         -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,   0.0f, 1.0f,
+         -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,   1.0f, 1.0f,
 
-          0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,          //  Right
-          0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-          0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-          0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+          0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,   0.0f, 0.0f,          //  Right
+          0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,   1.0f, 0.0f,
+          0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,   0.0f, 1.0f,
+          0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,   1.0f, 1.0f,
     };
 
     unsigned int indices[] = {
@@ -154,11 +154,14 @@ int main(int argc, char** argv)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*) (3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) (3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) (6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     // light
     unsigned int lightVAO;
@@ -167,8 +170,42 @@ int main(int argc, char** argv)
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+
+    // --------
+    // TEXTURES
+    // --------
+    unsigned int texture1;
+    glGenTextures(1, &texture1);
+    glBindTexture(GL_TEXTURE_2D, texture1);
+    //
+    // set parameters of texture
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);   // repeat along x=s
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);   // repeat along y=t
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    int width, height, n_channels;
+    unsigned char *data = stbi_load("../projects/13-LightingMaps/resources/container2.png",
+            &width,
+            &height,
+            &n_channels,
+            0);
+    if (data)
+    {
+        // Note these are GL_RGBA not GL_RGB because it's png format, not jpg like before
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture!" << std::endl;
+    }
+    stbi_image_free(data);
+
+    blockShader.use();
+    blockShader.setInt("texture1", 0);
 
     // wireframe mode, good for debugging
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

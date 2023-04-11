@@ -17,8 +17,11 @@ struct Material {
 uniform Light light;
 uniform Material material;
 
+uniform sampler2D texture1;
+
 in vec3 FragPos;
 in vec3 Normal;
+in vec2 TexCoord;
 
 // viewPos is here needed only because we compute the lighting in world space and not viewspace
 // We can actually compute in view space and not need viewPos here because viewPos is always (0,0,0) in that case.
@@ -45,5 +48,6 @@ void main()
 
    vec3 result = ambient + diffuse + specular;
 
-   FragColor = vec4(result, 1.0);
+   FragColor = vec4(result, 1.0) * texture(texture1, TexCoord);
+   // FragColor = texture(texture1, TexCoord);
 }
