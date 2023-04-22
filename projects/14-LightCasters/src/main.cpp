@@ -254,6 +254,9 @@ int main(int argc, char** argv)
     glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
     glm::vec3 lightDir(-0.2f, -1.0f, -0.3f);
     glm::vec3 lightPos( 0.2f,  1.0f,  0.3f);
+    float lightConstant = 1.0f;
+    float lightLinear = 0.09f;
+    float lightQuadratic = 0.032f;
 
     glm::vec3 blockColor(0.8f, 0.5f, 0.61f);
 
@@ -284,9 +287,9 @@ int main(int argc, char** argv)
         view = camera.GetViewMatrix();
 
         // Rotate the light
-        // lightPos.x = 3.0f * sin(time);
+        lightPos.x = 3.0f * sin(time);
         // lightPos.y = cos(time/2.0) * 2.0f;
-        // lightPos.z = 3.0f * cos(time);
+        lightPos.z = 3.0f * cos(time);
 
         glm::vec3 ambient = lightColor * 0.5f;
         glm::vec3 diffuse = lightColor * 0.2f;
@@ -298,6 +301,9 @@ int main(int argc, char** argv)
         blockShader.set3f("light.specular", lightColor);
         blockShader.set3f("light.position", lightPos);
         blockShader.set3f("light.direction", lightDir);
+        blockShader.setFloat("light.constant", lightConstant);
+        blockShader.setFloat("light.linear", lightLinear);
+        blockShader.setFloat("light.quadratic", lightQuadratic);
         blockShader.set3f("viewPos", camera.Position);
         blockShader.setMat4f("proj", proj);
         blockShader.setMat4f("view", view);
