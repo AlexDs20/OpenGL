@@ -24,3 +24,9 @@ In practice:
 with:
     - $d$: distance from fragment to light source
     - $K_c = 1$, $K_l$, $K_q$: constant, linear and quadratic constants
+for each of the light effects. Maybe not needed for ambient light but gives weird effects if several light sources and no attenuation.
+
+## Spot Light
+- Only emits ray in specific direction
+
+- Check if fragment within a threshold angle of the spotDir.

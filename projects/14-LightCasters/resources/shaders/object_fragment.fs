@@ -10,6 +10,9 @@ struct Light {
    float constant;
    float linear;
    float quadratic;
+
+   // if spotlight
+   float cutOff;
 };
 
 struct Material {
@@ -19,6 +22,7 @@ struct Material {
 };
 
 uniform Light light;
+uniform Light flashLight;
 uniform Material material;
 
 in vec3 FragPos;
@@ -31,30 +35,55 @@ uniform vec3 viewPos;
 
 out vec4 FragColor;
 
-void main()
-{
+
+vec3 compute_light(Light light, vec3 fragPos, vec3 normal, vec2 texCoord, Material mat, vec3 viewPos){
    // Compute attenuation of light due to distance
-   float distance = length(light.position - FragPos);
+   float distance = length(light.position - fragPos);
    float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * distance * distance);
 
-   // Ambient light
-   vec3 ambient = light.ambient * texture(material.diffuse, TexCoord).rgb;
-
    // Diffuse light
-   vec3 norm = normalize(Normal);
+   vec3 norm = normalize(normal);
    vec3 lightDir;
    if (false)   // if we work with the directional light
       lightDir = normalize(-light.direction);
-   else       // if we work with the position of the light
-      lightDir =  normalize(light.position - FragPos);
+   else if (true)      // if we work with the position of the light
+      lightDir =  normalize(light.position - fragPos);
+
    float diff = max(dot(norm, lightDir), 0.0);
-   vec3 diffuse = light.diffuse * diff * texture(material.diffuse, TexCoord).rgb;
+   vec3 diffuse = light.diffuse * diff * texture(mat.diffuse, texCoord).rgb;
 
    // Specular light
-   vec3 viewDir = normalize(viewPos - FragPos);
+   vec3 viewDir = normalize(viewPos - fragPos);
    vec3 reflectDir = reflect(-lightDir, norm);
-   float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-   vec3 specular = light.specular * spec * texture(material.specular, TexCoord).rgb;
+   float spec = pow(max(dot(viewDir, reflectDir), 0.0), mat.shininess);
+   vec3 specular = light.specular * spec * texture(mat.specular, texCoord).rgb;
 
-   FragColor = vec4(attenuation * (ambient + diffuse + specular), 1.0);
+   return attenuation * (diffuse + specular);
+};
+
+void main()
+{
+   // Ambient light
+   vec3 ambient = light.ambient * texture(material.diffuse, TexCoord).rgb;
+
+
+   vec3 light1 = compute_light(light, FragPos, Normal, TexCoord, material, viewPos);
+
+
+   // Same for flash light
+   vec3 lightDir;
+   if (false)   // if we work with the directional light
+      lightDir = normalize(-flashLight.direction);
+   else if (true)      // if we work with the position of the light
+      lightDir =  normalize(flashLight.position - FragPos);
+   float cosTheta = dot(lightDir, normalize(-flashLight.direction));
+
+   vec3 light2 ;
+   if (cosTheta > flashLight.cutOff) {
+      light2 = compute_light(flashLight, FragPos, Normal, TexCoord, material, viewPos);
+   } else {
+      light2 = vec3(0.0f, 0.0f, 0.0f);
+   }
+
+   FragColor = vec4(light1 + light2 + ambient, 1.0);
 }
