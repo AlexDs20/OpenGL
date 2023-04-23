@@ -251,16 +251,47 @@ int main(int argc, char** argv)
     // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     // Define light stuff
+    glm::vec3 blockColor(0.8f, 0.5f, 0.61f);
     glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
     glm::vec3 lightDir(-0.2f, -1.0f, -0.3f);
     glm::vec3 lightPos( 0.2f,  1.0f,  0.3f);
+    glm::vec3 ambient = lightColor * 0.5f;
+    glm::vec3 diffuse = lightColor * 0.2f;
     float lightConstant = 1.0f;
     float lightLinear = 0.09f;
     float lightQuadratic = 0.032f;
-    float lowCutOff = 22.5f;
-    float highCutOff = 30.0f;
+    float lowCutOff = 15.0f;
+    float highCutOff = 20.0f;
 
-    glm::vec3 blockColor(0.8f, 0.5f, 0.61f);
+    // directional light
+    blockShader.use();
+    blockShader.set3f("dirLight.ambient", ambient);
+    blockShader.set3f("dirLight.diffuse", diffuse);
+    blockShader.set3f("dirLight.specular", lightColor);
+    blockShader.set3f("dirLight.direction", lightDir);
+
+    // point lights
+    blockShader.set3f("pointLights[0].position", lightPos);
+    blockShader.setFloat("pointLights[0].constant", lightConstant);
+    blockShader.setFloat("pointLightS[0].linear", lightLinear);
+    blockShader.setFloat("pointLightS[0].quadratic", lightQuadratic);
+    blockShader.set3f("pointLights[0].ambient", ambient);
+    blockShader.set3f("pointLights[0].diffuse", diffuse);
+    blockShader.set3f("pointLights[0].specular", lightColor);
+
+    // spot light (just camera here)
+    blockShader.set3f("spotLight.position", camera.Position);
+    blockShader.set3f("spotLight.direction", camera.Front);
+    blockShader.setFloat("spotLight.constant", lightConstant);
+    blockShader.setFloat("spotLight.linear", lightLinear);
+    blockShader.setFloat("spotLight.quadratic", lightQuadratic);
+    blockShader.set3f("spotLight.ambient", ambient);
+    blockShader.set3f("spotLight.diffuse", diffuse);
+    blockShader.set3f("spotLight.specular", lightColor);
+    blockShader.setFloat("spotLight.lowCutOff", glm::cos(glm::radians(lowCutOff)));
+    blockShader.setFloat("spotLight.highCutOff", glm::cos(glm::radians(highCutOff)));
+
+
 
     // Transforms
     glm::mat4 proj;
@@ -293,32 +324,12 @@ int main(int argc, char** argv)
         // lightPos.y = cos(time/2.0) * 2.0f;
         lightPos.z = 3.0f * cos(time);
 
-        glm::vec3 ambient = lightColor * 0.5f;
-        glm::vec3 diffuse = lightColor * 0.2f;
-
         // Select shader program, bind VAO and draw!
         blockShader.use();
-        blockShader.set3f("light.ambient", ambient);
-        blockShader.set3f("light.diffuse", diffuse);
-        blockShader.set3f("light.specular", lightColor);
-        blockShader.set3f("light.position", lightPos);
-        blockShader.set3f("light.direction", lightDir);
-        blockShader.setFloat("light.constant", lightConstant);
-        blockShader.setFloat("light.linear", lightLinear);
-        blockShader.setFloat("light.quadratic", lightQuadratic);
+        blockShader.set3f("pointLights[0].position", lightPos);
 
-        // flashlight
-        blockShader.set3f("flashLight.position", camera.Position);
-        blockShader.set3f("flashLight.direction", camera.Front);
-        blockShader.set3f("flashLight.ambient", ambient);
-        blockShader.set3f("flashLight.diffuse", diffuse);
-        blockShader.set3f("flashLight.specular", lightColor);
-        blockShader.setFloat("flashLight.constant", lightConstant);
-        blockShader.setFloat("flashLight.linear", lightLinear);
-        blockShader.setFloat("flashLight.quadratic", lightQuadratic);
-        blockShader.setFloat("flashLight.lowCutOff", glm::cos(glm::radians(lowCutOff)));
-        blockShader.setFloat("flashLight.highCutOff", glm::cos(glm::radians(highCutOff)));
-
+        blockShader.set3f("spotLight.position", camera.Position);
+        blockShader.set3f("spotLight.direction", camera.Front);
 
         blockShader.set3f("viewPos", camera.Position);
         blockShader.setMat4f("proj", proj);
