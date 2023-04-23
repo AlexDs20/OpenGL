@@ -12,7 +12,8 @@ struct Light {
    float quadratic;
 
    // if spotlight
-   float cutOff;
+   float lowCutOff;
+   float highCutOff;
 };
 
 struct Material {
@@ -69,7 +70,6 @@ void main()
 
    vec3 light1 = compute_light(light, FragPos, Normal, TexCoord, material, viewPos);
 
-
    // Same for flash light
    vec3 lightDir;
    if (false)   // if we work with the directional light
@@ -79,11 +79,17 @@ void main()
    float cosTheta = dot(lightDir, normalize(-flashLight.direction));
 
    vec3 light2 ;
-   if (cosTheta > flashLight.cutOff) {
+   if (cosTheta > flashLight.lowCutOff) {
       light2 = compute_light(flashLight, FragPos, Normal, TexCoord, material, viewPos);
    } else {
       light2 = vec3(0.0f, 0.0f, 0.0f);
    }
 
-   FragColor = vec4(light1 + light2 + ambient, 1.0);
+   float intensity = clamp(
+            (cosTheta - flashLight.highCutOff) / (flashLight.lowCutOff - flashLight.highCutOff),
+            0.0f,
+            1.0f);
+
+
+   FragColor = vec4(light1 + intensity * light2 + ambient, 1.0);
 }

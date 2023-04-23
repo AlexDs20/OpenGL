@@ -30,3 +30,5 @@ for each of the light effects. Maybe not needed for ambient light but gives weir
 - Only emits ray in specific direction
 
 - Check if fragment within a threshold angle of the spotDir.
+
+- Can add smoother decrease at the edge by applying computing an intensity which would decrease towards the outside.

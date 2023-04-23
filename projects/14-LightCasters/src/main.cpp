@@ -257,7 +257,8 @@ int main(int argc, char** argv)
     float lightConstant = 1.0f;
     float lightLinear = 0.09f;
     float lightQuadratic = 0.032f;
-    float cutOff = 12.5f;
+    float lowCutOff = 22.5f;
+    float highCutOff = 30.0f;
 
     glm::vec3 blockColor(0.8f, 0.5f, 0.61f);
 
@@ -307,15 +308,16 @@ int main(int argc, char** argv)
         blockShader.setFloat("light.quadratic", lightQuadratic);
 
         // flashlight
+        blockShader.set3f("flashLight.position", camera.Position);
+        blockShader.set3f("flashLight.direction", camera.Front);
         blockShader.set3f("flashLight.ambient", ambient);
         blockShader.set3f("flashLight.diffuse", diffuse);
         blockShader.set3f("flashLight.specular", lightColor);
-        blockShader.set3f("flashLight.position", camera.Position);
-        blockShader.set3f("flashLight.direction", camera.Front);
         blockShader.setFloat("flashLight.constant", lightConstant);
         blockShader.setFloat("flashLight.linear", lightLinear);
         blockShader.setFloat("flashLight.quadratic", lightQuadratic);
-        blockShader.setFloat("flashLight.cutOff", glm::cos(glm::radians(cutOff)));
+        blockShader.setFloat("flashLight.lowCutOff", glm::cos(glm::radians(lowCutOff)));
+        blockShader.setFloat("flashLight.highCutOff", glm::cos(glm::radians(highCutOff)));
 
 
         blockShader.set3f("viewPos", camera.Position);
