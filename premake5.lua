@@ -50,6 +50,7 @@ include "deps/glfw.lua"
 include "deps/glad.lua"
 include "deps/stb.lua"
 include "deps/glm.lua"
+include "deps/assimp.lua"
 
 -- The windowed app
 include "projects/test_opengl"
@@ -65,3 +66,4 @@ include "projects/12-Materials"
 include "projects/13-LightingMaps"
 include "projects/14-LightCasters"
 include "projects/15-MultipleLights"
+include "projects/20-Assimp"
