@@ -3,13 +3,13 @@ project "20-Assimp"
 
     includedirs
     {
-        "../../deps/stb",
+        "include",
         "../../deps/glad/include",
         "../../deps/glfw/include",
         "../../deps/glm",
-        "include"
+        "../../deps/stb/",
     }
 
     files "src/**"
-    links{ "STB", "GLAD", "GLFW", "GLM" }
-
+    links{ "assimp", "STB", "GLAD", "GLFW", "GLM" }
+    -- Uses system assimp

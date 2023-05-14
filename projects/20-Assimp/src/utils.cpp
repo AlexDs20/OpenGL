@@ -1,4 +1,4 @@
-#include <glad/glad.h>
+#include "GLCommon.h"
 #include <GLFW/glfw3.h>
 #include <iostream>
 

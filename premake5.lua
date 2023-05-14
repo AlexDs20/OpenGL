@@ -50,7 +50,6 @@ include "deps/glfw.lua"
 include "deps/glad.lua"
 include "deps/stb.lua"
 include "deps/glm.lua"
-include "deps/assimp.lua"
 
 -- The windowed app
 include "projects/test_opengl"
