@@ -12,3 +12,7 @@ Simple and robust simulation of bodies running (hopefully) in real time.
     - glm
 - System install:
     - assimp
+
+# Preview
+Currently importing models and using lights
+![](projects/20-Assimp/previews/light_backpack.gif)
