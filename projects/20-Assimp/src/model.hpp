@@ -19,8 +19,8 @@ class Model{
         void Draw(Shader &shader);
 
     private:
-        std::vector<Mesh> meshes;
-        std::string directory;
+        std::vector<Mesh> m_meshes;
+        std::string m_directory;
 
         void loadModel(std::string path);
         void processNode(aiNode* node, const aiScene* scene);

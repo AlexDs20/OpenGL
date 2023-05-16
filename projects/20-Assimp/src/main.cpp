@@ -17,6 +17,7 @@
 #include "utils.hpp"
 #include "mesh.hpp"
 #include "model.hpp"
+#include "light.hpp"
 
 
 std::string model_path("../projects/20-Assimp/resources/models/backpack/backpack.obj");
@@ -82,7 +83,19 @@ int main(int argc, char** argv)
     stbi_set_flip_vertically_on_load(true);
 
     Model model(model_path.c_str());
-    Shader blockShader(obj_vertex.c_str(), obj_fragment.c_str());
+    Shader objectShader(obj_vertex.c_str(), obj_fragment.c_str());
+
+    glm::vec3 lightColor(1.0f);
+    PointLight light = {
+        .position = glm::vec3(0.0f, 0.0f, 3.0f),
+        .ambient = 0.2f*lightColor,
+        .diffuse = 0.5f*lightColor,
+        .specular = lightColor,
+        .linear = 0.09f,
+        .quadratic = 0.032f,
+    };
+
+    objectShader.setPointLight(light);
 
     // wireframe mode, good for debugging
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -105,16 +118,23 @@ int main(int argc, char** argv)
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        // move light
+        light.position.x = 3.0f * glm::cos(time);
+        light.position.y = 1.0f;
+        light.position.z = 3.0f * glm::sin(time);
+        objectShader.setPointLight(light);
+
         glm::mat4 proj = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 m = glm::mat4(1.0f);
-        blockShader.set3f("viewPos", camera.Position);
-        blockShader.setMat4f("proj", proj);
-        blockShader.setMat4f("view", view);
-        blockShader.setMat4f("model", m);
+        objectShader.set3f("viewPos", camera.Position);
+        objectShader.setMat4f("proj", proj);
+        objectShader.setMat4f("view", view);
+        objectShader.setMat4f("model", m);
 
-        blockShader.use();
-        model.Draw(blockShader);
+        objectShader.use();
+        model.Draw(objectShader);
+
 
         // swap buffers and poll IO events (key pressed/released, ...)
         // -----------------------------------------------------------

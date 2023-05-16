@@ -93,7 +93,18 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 
 }
 
-void Shader::use()
+void Shader::setPointLight(const PointLight& light) const {
+    Shader::use();
+    Shader::set3f("pointLights[0].position", light.position);
+    Shader::set3f("pointLights[0].ambient", light.ambient);
+    Shader::set3f("pointLights[0].diffuse", light.diffuse);
+    Shader::set3f("pointLights[0].specular", light.specular);
+    Shader::setFloat("pointLights[0].constant", light.constant);
+    Shader::setFloat("pointLights[0].linear", light.linear);
+    Shader::setFloat("pointLights[0].quadratic", light.quadratic);
+};
+
+void Shader::use() const
 {
     glUseProgram(ID);
 }

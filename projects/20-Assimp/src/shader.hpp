@@ -1,10 +1,10 @@
 #ifndef SHADER_H
 #define SHADER_H
 #include "GLCommon.h"
-
 #include <string>
 #include <glm/glm.hpp>
 
+#include "light.hpp"
 
 class Shader
 {
@@ -16,7 +16,10 @@ class Shader
     Shader(const char* vertexPath, const char* fragmentPath);
 
     // Use this shade program
-    void use();
+    void use() const;
+
+    // set light uniforms
+    void setPointLight(const PointLight&) const;
 
     // set uniform values
     void setBool(const std::string &name, bool value) const;

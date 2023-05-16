@@ -20,8 +20,8 @@ Model::Model(const char *path){
 }
 
 void Model::Draw(Shader &shader){
-    for(std::vector<Mesh>::size_type i = 0; i != meshes.size(); ++i)
-        meshes[i].Draw(shader);
+    for(std::vector<Mesh>::size_type i = 0; i != m_meshes.size(); ++i)
+        m_meshes[i].Draw(shader);
 }
 
 void Model::loadModel(std::string path){
@@ -32,19 +32,19 @@ void Model::loadModel(std::string path){
         std::cout << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
         return;
     }
-    directory = path.substr(0, path.find_last_of('/'));
+    m_directory = path.substr(0, path.find_last_of('/'));
     processNode(scene->mRootNode, scene);
 }
 
 void Model::processNode(aiNode* node, const aiScene* scene){
-    // process all the node's meshes
+    // process all the node's m_meshes
     for (unsigned int i = 0; i < node->mNumMeshes; ++i)
     {
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-        meshes.push_back(processMesh(mesh, scene));
+        m_meshes.push_back(processMesh(mesh, scene));
     }
     // do the same for each children
-    for (unsigned int i = 0; i< node->mNumChildren; ++i)
+    for (unsigned int i = 0; i < node->mNumChildren; ++i)
         processNode(node->mChildren[i], scene);
 }
 
@@ -117,7 +117,7 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType 
         mat->GetTexture(type, i, &str);
 
         Texture texture;
-        texture.id = TextureFromFile(str.C_Str(), directory);
+        texture.id = TextureFromFile(str.C_Str(), m_directory);
         texture.type = typeName;
         texture.path = str.C_Str();
 
