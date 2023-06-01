@@ -28,6 +28,7 @@ void Mesh::Draw(Shader &shader){
             number = std::to_string(diffuseNr++);
         else if (name == "texture_specular")
             number = std::to_string(specularNr++);
+            shader.setFloat(("material.shininess"+number).c_str(), 1.0f);
 
         glActiveTexture(GL_TEXTURE0 + i);
         shader.setInt(("material." + name + number).c_str(), i);

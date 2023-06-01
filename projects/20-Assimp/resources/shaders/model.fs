@@ -66,7 +66,7 @@ vec3 ComputePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir
 
     // specular
     vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 1.0); // change 1.0 for material.shininess1
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess1);
     vec3 specular = light.specular * spec * texture(material.texture_specular1, TexCoord).xxx;
 
     return attenuation* (ambient + diffuse + specular);

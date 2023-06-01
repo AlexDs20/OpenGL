@@ -17,6 +17,7 @@ struct Texture {
     unsigned int id;
     std::string type;   // diffuse, specular
     std::string path;
+    float shininess;
 };
 
 class Mesh {
