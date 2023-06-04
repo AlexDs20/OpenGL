@@ -19,6 +19,7 @@ class Model{
         void Draw(Shader &shader);
 
     private:
+        std::vector<Texture> textures_loaded;
         std::vector<Mesh> m_meshes;
         std::string m_directory;
 

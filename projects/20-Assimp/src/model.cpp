@@ -1,4 +1,5 @@
 #include "GLCommon.h"
+#include <cstring>
 #include <glm/glm.hpp>
 #include <stb_image.h>
 #include <assimp/Importer.hpp>
@@ -14,6 +15,7 @@
 #include "model.hpp"
 
 #include <iostream>
+
 
 Model::Model(const char *path){
     loadModel(path);
@@ -116,12 +118,23 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType 
         aiString str;
         mat->GetTexture(type, i, &str);
 
-        Texture texture;
-        texture.id = TextureFromFile(str.C_Str(), m_directory);
-        texture.type = typeName;
-        texture.path = str.C_Str();
-
-        textures.push_back(texture);
+        bool skip = false;
+        // check if texture already loaded
+        for (std::vector<Texture>::const_iterator it = textures_loaded.begin(); it != textures_loaded.end(); ++it) {
+            if (std::strcmp(it->path.data(), str.C_Str()) == 0) {
+                textures.push_back(*it);
+                skip = true;
+                break;
+            }
+        }
+        if (!skip) {
+            Texture texture;
+            texture.id = TextureFromFile(str.C_Str(), m_directory);
+            texture.type = typeName;
+            texture.path = str.C_Str();
+            textures.push_back(texture);
+            textures_loaded.push_back(texture);
+        }
     }
     return textures;
 }
